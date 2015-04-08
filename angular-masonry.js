@@ -1,10 +1,11 @@
 /*!
- * angular-masonry 0.10.0
+ * angular-masonry 0.11.0
  * Pascal Hartig, weluse GmbH, http://weluse.de/
  * License: MIT
  */
 (function () {
   'use strict';
+  console.log('Start Masonry!');
   angular.module('wu.masonry', []).controller('MasonryCtrl', [
     '$scope',
     '$element',
@@ -38,13 +39,13 @@
             return;
           }
           schedule.forEach(function scheduleForEach(args) {
-            $element.masonry.apply($element, args);
+            $($element).masonry.apply($element, args);
           });
           schedule = [];
         }, 30);
       };
       function defaultLoaded($element) {
-        $element.addClass('loaded');
+        $($element).addClass('loaded');
       }
       this.appendBrick = function appendBrick(element, id) {
         if (destroyed) {
@@ -52,13 +53,13 @@
         }
         function _append() {
           if (Object.keys(bricks).length === 0) {
-            $element.masonry('resize');
+            $($element).masonry('resize');
           }
           if (bricks[id] === undefined) {
             // Keep track of added elements.
             bricks[id] = true;
             defaultLoaded(element);
-            $element.masonry('appended', element, true);
+            $($element).masonry('appended', element, true);
           }
         }
         function _layout() {
@@ -73,9 +74,9 @@
           _layout();
         } else if (self.preserveOrder) {
           _append();
-          element.imagesLoaded(_layout);
+          $(element).imagesLoaded(_layout);
         } else {
-          element.imagesLoaded(function imagesLoaded() {
+          $(element).imagesLoaded(function imagesLoaded() {
             _append();
             _layout();
           });
@@ -86,20 +87,20 @@
           return;
         }
         delete bricks[id];
-        $element.masonry('remove', element);
+        $($element).masonry('remove', element);
         this.scheduleMasonryOnce('layout');
       };
       this.destroy = function destroy() {
         destroyed = true;
-        if ($element.data('masonry')) {
+        if ($($element).data('masonry')) {
           // Gently uninitialize if still present
-          $element.masonry('destroy');
+          $($element).masonry('destroy');
         }
         $scope.$emit('masonry.destroyed');
         bricks = [];
       };
       this.reload = function reload() {
-        $element.masonry();
+        $($element).masonry();
         $scope.$emit('masonry.reloaded');
       };
     }
@@ -114,7 +115,7 @@
               itemSelector: attrs.itemSelector || '.masonry-brick',
               columnWidth: parseInt(attrs.columnWidth, 10) || attrs.columnWidth
             }, attrOptions || {});
-          element.masonry(options);
+          $(element).masonry(options);
           var loadImages = scope.$eval(attrs.loadImages);
           ctrl.loadImages = loadImages !== false;
           var preserveOrder = scope.$eval(attrs.preserveOrder);
@@ -143,7 +144,7 @@
         pre: function preLink(scope, element, attrs, ctrl) {
           var id = scope.$id, index;
           ctrl.appendBrick(element, id);
-          element.on('$destroy', function () {
+          $(element).on('$destroy', function () {
             ctrl.removeBrick(id, element);
           });
           scope.$on('masonry.reload', function () {
